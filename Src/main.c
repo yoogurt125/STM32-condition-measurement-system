@@ -89,6 +89,8 @@ uint8_t humidity_int_units;
 uint8_t humidity_int_decimals;
 uint8_t humidityTab[30];
 uint8_t temperatureTab[30];
+uint8_t dataToSend[]={0,1,2,3,4,5,6,7,8,9};
+
 int i = 0;
 
 /*DHT11 CODE*/
@@ -221,7 +223,6 @@ int main(void)
 
 	/* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim7);
-	HAL_UART_Receive_IT(&huart2, (uint8_t*) str1, 1);
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -336,9 +337,9 @@ static void MX_TIM7_Init(void)
 
 	/* USER CODE END TIM7_Init 1 */
 	htim7.Instance = TIM7;
-	htim7.Init.Prescaler = 179;
+	htim7.Init.Prescaler = 9999;
 	htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim7.Init.Period = 89;
+	htim7.Init.Period = 9999;
 	htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	if (HAL_TIM_Base_Init(&htim7) != HAL_OK) {
 		Error_Handler();
@@ -371,7 +372,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -467,6 +468,9 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN 5 */
 	/* Infinite loop */
 	for (;;) {
+
+
+
 		for(i=0;i<30;i++){
 		DHT11_start();
 		presence = check_response();
@@ -531,6 +535,8 @@ void StartDefaultTask(void const * argument)
 			GPIOC->ODR = numbers[humidity_int_units];
 		}
 		LD2_TOGGLE();
+
+		HAL_UART_Transmit(&huart2, temperatureTab, 30, 10000);
 		if(i==29)
 			i=0;
 		}
@@ -607,10 +613,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 	/* USER CODE END Callback 0 */
 	if (htim->Instance == TIM7) {
-		HAL_IncTick();
-		uint8_t dupa = 6;
-		sprintf(str1, "test %d \r\n", dupa);
-		HAL_UART_Transmit_IT(&huart2, (uint8_t*)str1, strlen(str1));
+
+
+
 	}
 	/* USER CODE BEGIN Callback 1 */
 
