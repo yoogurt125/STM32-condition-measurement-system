@@ -26,7 +26,6 @@
 #include "tm_stm32_delay.h"
 #include "tm_stm32_rcc.h"
 #include "defines.h"
-#include "MY_DHT22.h"
 #include "string.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -57,7 +56,7 @@ TIM_HandleTypeDef htim7;
 
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart1;
-DMA_HandleTypeDef hdma_usart2_rx;
+
 
 osThreadId defaultTaskHandle;
 osThreadId ds18b20_taskHandle;
@@ -69,7 +68,6 @@ osThreadId ds18b20_taskHandle;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM7_Init(void);
-static void MX_USART2_UART_Init(void);
 static void MX_USART1_UART_Init(void);
 void StartDefaultTask(void const * argument);
 void Start_ds18b20_task(void const * argument);
@@ -81,8 +79,6 @@ void Start_ds18b20_task(void const * argument);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 float temp;
-float TempC, Humidity;
-char str1[60] = { 0 };
 uint8_t numbers[10] = { 0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F,
 		0x67 };
 uint8_t temp_int_units;
@@ -92,15 +88,16 @@ uint8_t humidity_int_decimals;
 uint8_t humidityTab[30];
 uint8_t temperatureTab[30];
 int i = 0;
+bool display_temp = true;
+TM_OneWire_t OW;
+uint8_t DS_ROM[8];
 
 /*DHT11 CODE*/
 uint8_t Rh_byte1, Rh_byte2, Temp_byte1, Temp_byte2;
 uint16_t sum, RH, TEMP;
-int temp_low, temp_high, rh_low, rh_high;
-char temp_char1[2], temp_char2, rh_char1[2], rh_char2;
 uint8_t presence = 0;
 GPIO_InitTypeDef GPIO_InitStruct;
-bool display_temp = true;
+
 
 void set_gpio_output(void) {
 	/*Configure GPIO pin output: PA2 */
@@ -161,8 +158,7 @@ uint8_t read_data(void) {
 	return i;
 }
 
-TM_OneWire_t OW;
-uint8_t DS_ROM[8];
+
 
 /* USER CODE END 0 */
 
@@ -187,7 +183,7 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 	TM_OneWire_Init(&OW, GPIOC, GPIO_PIN_9);
-//	DHT22_Init(DHT11_GPIO_Port, DHT11_Pin);
+
 
 	if (TM_OneWire_First(&OW)) {
 		/* Read ROM number */
@@ -357,38 +353,7 @@ static void MX_TIM7_Init(void)
 
 }
 
-/**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
 
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
-
-}
 /**
   * @brief USART1 Initialization Function
   * @param None
@@ -481,9 +446,9 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void debugPrintln(UART_HandleTypeDef *huart, char _out[]){
-	HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
+	HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 1000);
 	char newline[2] = "\r\n";
-	HAL_UART_Transmit(huart, (uint8_t *) newline, 2, 10);
+	HAL_UART_Transmit(huart, (uint8_t *) newline, 2, 1000);
 }
 
 /* USER CODE END 4 */
@@ -565,9 +530,9 @@ void StartDefaultTask(void const * argument)
 			GPIOC->ODR = numbers[humidity_int_units];
 		}
 		LD2_TOGGLE();
-//		debugPrintln(&huart1, "how are you?");
-	    HAL_UART_Transmit(&huart1, temperatureTab, 30, 1000);
-		if(i==29)
+//		debugPrintln(&huart1, (char*) temp_int_decimals);
+		HAL_UART_Transmit(&huart1, temperatureTab, 30, 1000);
+		if(i==30)
 			i=0;
 		}
 	}
@@ -583,48 +548,48 @@ void StartDefaultTask(void const * argument)
  * @retval None
  */
 /* USER CODE END Header_Start_ds18b20_task */
-void Start_ds18b20_task(void const * argument)
-{
-  /* USER CODE BEGIN Start_ds18b20_task */
-	/* Infinite loop */
-	for (;;) {
-//		vTaskDelay(500);
-//		if (HAL_GPIO_ReadPin(BlueB_GPIO_Port, BlueB_Pin)) {
-//			if (TM_DS18B20_Is(DS_ROM)) {
-//				/* Everything is done */
-//				if (TM_DS18B20_AllDone(&OW)) {
-//					/* Read temperature from device */
-//					if (TM_DS18B20_Read(&OW, DS_ROM, &temp)) {
-//						/* Temp read OK, CRC is OK */
-//
-//						/* Start again on all sensors */
-//						TM_DS18B20_StartAll(&OW);
-//
-//						temp_int_units = ((uint8_t) temp) % 10;
-//						temp_int_decimals = ((uint8_t) temp) / 10;
-//
-//						GPIOB->ODR = numbers[temp_int_decimals];
-//						GPIOC->ODR = numbers[temp_int_units];
-//
-//
-//						/* Check temperature */
-//
-//						vTaskDelay(500);
-//
-//					} else {
-//						/* CRC failed, hardware problems on data line */
-//					}
-//				}
-//			}
-//		} else if (HAL_GPIO_ReadPin(BlueB_GPIO_Port, BlueB_Pin)
-//				== GPIO_PIN_RESET) {
-//
-////			GPIOC->ODR = numbers[temp_int_decimals];
-////			GPIOB->ODR = numbers[temp_int_units];
-//
-//			}
-	}
-}
+//void Start_ds18b20_task(void const * argument)
+//{
+//  /* USER CODE BEGIN Start_ds18b20_task */
+//	/* Infinite loop */
+//	for (;;) {
+////		vTaskDelay(500);
+////		if (HAL_GPIO_ReadPin(BlueB_GPIO_Port, BlueB_Pin)) {
+////			if (TM_DS18B20_Is(DS_ROM)) {
+////				/* Everything is done */
+////				if (TM_DS18B20_AllDone(&OW)) {
+////					/* Read temperature from device */
+////					if (TM_DS18B20_Read(&OW, DS_ROM, &temp)) {
+////						/* Temp read OK, CRC is OK */
+////
+////						/* Start again on all sensors */
+////						TM_DS18B20_StartAll(&OW);
+////
+////						temp_int_units = ((uint8_t) temp) % 10;
+////						temp_int_decimals = ((uint8_t) temp) / 10;
+////
+////						GPIOB->ODR = numbers[temp_int_decimals];
+////						GPIOC->ODR = numbers[temp_int_units];
+////
+////
+////						/* Check temperature */
+////
+////						vTaskDelay(500);
+////
+////					} else {
+////						/* CRC failed, hardware problems on data line */
+////					}
+////				}
+////			}
+////		} else if (HAL_GPIO_ReadPin(BlueB_GPIO_Port, BlueB_Pin)
+////				== GPIO_PIN_RESET) {
+////
+//////			GPIOC->ODR = numbers[temp_int_decimals];
+//////			GPIOB->ODR = numbers[temp_int_units];
+////
+////			}
+//	}
+//}
 
   /* USER CODE END Start_ds18b20_task */
 
