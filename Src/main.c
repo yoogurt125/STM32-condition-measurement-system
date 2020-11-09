@@ -78,6 +78,7 @@ void Start_ds18b20_task(void const * argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+char buffer[1];
 float temp;
 uint8_t numbers[10] = { 0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F,
 		0x67 };
@@ -180,6 +181,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
+
 
   /* USER CODE BEGIN Init */
 	TM_OneWire_Init(&OW, GPIOC, GPIO_PIN_9);
@@ -530,8 +532,12 @@ void StartDefaultTask(void const * argument)
 			GPIOC->ODR = numbers[humidity_int_units];
 		}
 		LD2_TOGGLE();
-//		debugPrintln(&huart1, (char*) temp_int_decimals);
-		HAL_UART_Transmit(&huart1, temperatureTab, 30, 1000);
+//		debugPrintln(&huart1, (char*) temp_int_decimals
+		HAL_UART_Receive(&huart1, (uint8_t*) &buffer, 1, 1000);
+		if(*buffer=='1'){
+			HAL_UART_Transmit(&huart1, temperatureTab, 30, 1000);
+			*buffer='0';
+		}
 		if(i==30)
 			i=0;
 		}
