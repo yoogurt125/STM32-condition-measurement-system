@@ -535,6 +535,7 @@ void StartDefaultTask(void const * argument)
 //		debugPrintln(&huart1, (char*) temp_int_decimals
 		HAL_UART_Receive(&huart1, (uint8_t*) &buffer, 1, 1000);
 		if(*buffer=='1'){
+			temperatureTab[29]='\n';
 			HAL_UART_Transmit(&huart1, temperatureTab, 30, 1000);
 			*buffer='0';
 		}
