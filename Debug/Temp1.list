@@ -17,31 +17,31 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   6 .data         00000014  20000000  08003590  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  7 .bss          00004188  20000014  080035a4  00020014  2**2
+  7 .bss          000041ac  20000014  080035a4  00020014  2**2
                   ALLOC
-  8 ._user_heap_stack 00000600  2000419c  080035a4  0002419c  2**0
+  8 ._user_heap_stack 00000600  200041c0  080035a4  000241c0  2**0
                   ALLOC
   9 .ARM.attributes 00000030  00000000  00000000  00020014  2**0
                   CONTENTS, READONLY
- 10 .debug_info   0001bc3b  00000000  00000000  00020044  2**0
+ 10 .debug_info   0001c2ae  00000000  00000000  00020044  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_abbrev 0000432a  00000000  00000000  0003bc7f  2**0
+ 11 .debug_abbrev 00004362  00000000  00000000  0003c2f2  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000af98  00000000  00000000  0003ffa9  2**0
+ 12 .debug_loc    0000af98  00000000  00000000  00040654  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_aranges 000010e0  00000000  00000000  0004af48  2**3
+ 13 .debug_aranges 000010f0  00000000  00000000  0004b5f0  2**3
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_ranges 000014f0  00000000  00000000  0004c028  2**3
+ 14 .debug_ranges 00001500  00000000  00000000  0004c6e0  2**3
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_macro  00024c0b  00000000  00000000  0004d518  2**0
+ 15 .debug_macro  00025628  00000000  00000000  0004dbe0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_line   00010320  00000000  00000000  00072123  2**0
+ 16 .debug_line   0001074b  00000000  00000000  00073208  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_str    000d893f  00000000  00000000  00082443  2**0
+ 17 .debug_str    000ddf8b  00000000  00000000  00083953  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .comment      0000007b  00000000  00000000  0015ad82  2**0
+ 18 .comment      0000007b  00000000  00000000  001618de  2**0
                   CONTENTS, READONLY
- 19 .debug_frame  0000305c  00000000  00000000  0015ae00  2**2
+ 19 .debug_frame  0000307c  00000000  00000000  0016195c  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -5430,7 +5430,7 @@ void set_gpio_output(void) {
 	HAL_GPIO_Init(DHT11_GPIO_Port, &GPIO_InitStruct);
  80023be:	f7fe b927 	b.w	8000610 <HAL_GPIO_Init>
  80023c2:	bf00      	nop
- 80023c4:	200040c0 	.word	0x200040c0
+ 80023c4:	200040e4 	.word	0x200040e4
  80023c8:	40020000 	.word	0x40020000
 
 080023cc <set_gpio_input>:
@@ -5452,7 +5452,7 @@ void set_gpio_input(void) {
  80023da:	608b      	str	r3, [r1, #8]
 	HAL_GPIO_Init(DHT11_GPIO_Port, &GPIO_InitStruct);
  80023dc:	f7fe b918 	b.w	8000610 <HAL_GPIO_Init>
- 80023e0:	200040c0 	.word	0x200040c0
+ 80023e0:	200040e4 	.word	0x200040e4
  80023e4:	40020000 	.word	0x40020000
 
 080023e8 <DHT11_start>:
@@ -5849,15 +5849,15 @@ void StartDefaultTask(void const * argument)
  800265c:	40020800 	.word	0x40020800
  8002660:	20003fd4 	.word	0x20003fd4
  8002664:	2000403c 	.word	0x2000403c
- 8002668:	200040be 	.word	0x200040be
+ 8002668:	200040e0 	.word	0x200040e0
  800266c:	200040bc 	.word	0x200040bc
- 8002670:	20004158 	.word	0x20004158
+ 8002670:	2000417c 	.word	0x2000417c
  8002674:	2000403a 	.word	0x2000403a
  8002678:	20004044 	.word	0x20004044
  800267c:	20004018 	.word	0x20004018
  8002680:	20004060 	.word	0x20004060
  8002684:	20003fd0 	.word	0x20003fd0
- 8002688:	20004114 	.word	0x20004114
+ 8002688:	20004138 	.word	0x20004138
  800268c:	2000405e 	.word	0x2000405e
  8002690:	20004020 	.word	0x20004020
  8002694:	20000004 	.word	0x20000004
@@ -6196,7 +6196,7 @@ void StartDefaultTask(void const * argument)
  8002900:	40011000 	.word	0x40011000
  8002904:	40020000 	.word	0x40020000
  8002908:	10210000 	.word	0x10210000
- 800290c:	20004118 	.word	0x20004118
+ 800290c:	2000413c 	.word	0x2000413c
  8002910:	40001400 	.word	0x40001400
  8002914:	2000407c 	.word	0x2000407c
  8002918:	08003538 	.word	0x08003538
@@ -6585,7 +6585,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
  8002b08:	e7fb      	b.n	8002b02 <HAL_InitTick+0x62>
  8002b0a:	bf00      	nop
  8002b0c:	40023800 	.word	0x40023800
- 8002b10:	2000415c 	.word	0x2000415c
+ 8002b10:	20004180 	.word	0x20004180
  8002b14:	40001000 	.word	0x40001000
  8002b18:	000f4240 	.word	0x000f4240
 
@@ -6659,7 +6659,7 @@ void TIM6_DAC_IRQHandler(void)
  8002b34:	4801      	ldr	r0, [pc, #4]	; (8002b3c <TIM6_DAC_IRQHandler+0x8>)
  8002b36:	f7fe b95f 	b.w	8000df8 <HAL_TIM_IRQHandler>
  8002b3a:	bf00      	nop
- 8002b3c:	2000415c 	.word	0x2000415c
+ 8002b3c:	20004180 	.word	0x20004180
 
 08002b40 <TIM7_IRQHandler>:
 void TIM7_IRQHandler(void)
@@ -6671,7 +6671,7 @@ void TIM7_IRQHandler(void)
  8002b40:	4801      	ldr	r0, [pc, #4]	; (8002b48 <TIM7_IRQHandler+0x8>)
  8002b42:	f7fe b959 	b.w	8000df8 <HAL_TIM_IRQHandler>
  8002b46:	bf00      	nop
- 8002b48:	20004118 	.word	0x20004118
+ 8002b48:	2000413c 	.word	0x2000413c
 
 08002b4c <SystemInit>:
   */
@@ -8380,7 +8380,7 @@ TM_RCC_Result_t TM_RCC_InitSystem(void) {
  80034b4:	20000000 	.word	0x20000000
  80034b8:	20000014 	.word	0x20000014
  80034bc:	20000014 	.word	0x20000014
- 80034c0:	2000419c 	.word	0x2000419c
+ 80034c0:	200041c0 	.word	0x200041c0
 
 080034c4 <ADC_IRQHandler>:
  80034c4:	e7fe      	b.n	80034c4 <ADC_IRQHandler>
