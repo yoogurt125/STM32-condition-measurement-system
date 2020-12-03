@@ -86,9 +86,9 @@ uint8_t temp_int_units;
 uint8_t temp_int_decimals;
 uint8_t humidity_int_units;
 uint8_t humidity_int_decimals;
-uint8_t humidityTab[30];
-uint8_t temperatureTab[30];
-int i = 0;
+uint8_t humidityTab[24];
+uint8_t temperatureTab[24];
+int i = 0, j = 0;
 bool display_temp = true;
 TM_OneWire_t OW;
 uint8_t DS_ROM[8];
@@ -242,7 +242,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityIdle, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityIdle, 0, 2048);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of ds18b20_task */
@@ -465,6 +465,7 @@ void debugPrintln(UART_HandleTypeDef *huart, char _out[]){
 void StartDefaultTask(void const * argument)
 {
 
+
   /* USER CODE BEGIN 5 */
 	/* Infinite loop */
 	for (;;) {
@@ -503,10 +504,15 @@ void StartDefaultTask(void const * argument)
 						/* Start again on all sensors */
 						TM_DS18B20_StartAll(&OW);
 
-						temp_int_units = ((uint8_t) temp) % 10;
-						temp_int_decimals = ((uint8_t) temp) / 10;
+						temp_int_units = ((int8_t) temp) % 10;
+						temp_int_decimals = ((int8_t) temp) / 10;
 
-						temperatureTab[i] = (uint8_t) temp;
+
+						for(j=0;j<23;j++)
+						    {
+						        temperatureTab[j]=temperatureTab[j+1];
+						    }
+						temperatureTab[23] = (uint8_t) temp;
 
 //							GPIOB->ODR = numbers[temp_int_decimals];
 //							GPIOC->ODR = numbers[temp_int_units];
@@ -532,14 +538,16 @@ void StartDefaultTask(void const * argument)
 			GPIOC->ODR = numbers[humidity_int_units];
 		}
 		LD2_TOGGLE();
+		vTaskDelay(200);
+		LD2_TOGGLE();
 //		debugPrintln(&huart1, (char*) temp_int_decimals
 		HAL_UART_Receive(&huart1, (uint8_t*) &buffer, 1, 1000);
 		if(*buffer=='1'){
-			temperatureTab[29]='\n';
-			HAL_UART_Transmit(&huart1, temperatureTab, 30, 1000);
+			HAL_UART_Transmit(&huart1, temperatureTab, 24, 2500);
+			HAL_UART_Transmit(&huart1, humidityTab, 24, 2500);
 			*buffer='0';
 		}
-		if(i==30)
+		if(i==24)
 			i=0;
 		}
 	}

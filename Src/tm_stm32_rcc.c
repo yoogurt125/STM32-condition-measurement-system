@@ -87,6 +87,7 @@ TM_RCC_Result_t TM_RCC_InitSystem(void) {
 	
 	/* Try to init */
 	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+
 		return TM_RCC_Result_Error;
 	}
 
