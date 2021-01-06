@@ -566,7 +566,7 @@ void StartDefaultTask(void const *argument) {
 						temp_int_units = ((int8_t) temp) % 10;
 						temp_int_decimals = ((int8_t) temp) / 10;
 
-						if (checkHour()) {
+//						if (checkHour()) {
 							for (j = 0; j < 23; j++) {
 								temperatureTab[j] = temperatureTab[j + 1];
 							}
@@ -575,9 +575,9 @@ void StartDefaultTask(void const *argument) {
 								humidityTab[k] = humidityTab[k + 1];
 							}
 							humidityTab[23] = (uint8_t) Rh_byte1;
-						}
+//						}
 					} else {
-						printf("DATA collection failed");
+						//printf("DATA collection failed");
 					}
 				}
 			}
